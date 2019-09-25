@@ -32,8 +32,13 @@
 
 
 <hr noshade="noshade">
-<b><font color="#005128">Project Outline:</font></b> [at most
-1/2 page outline of what you intend to do]
+<b><font color="#005128">Project Outline:</font></b> 
+
+The startup paper covers 3 separate problems related to X-RAY reconstruction. The first is comparing iterative coordinate descent (ICD) and stochastic gradient descent (SGD) as well as different parallelism granularities for GPU kernel design for recreating the 3D image. This is a problem that has been explored by other papers as well; the challenge is that because different projections have an irregular geometric relationship (meaning different projections access the same segment of the 3D image being recreated "randomly"), and GPUs slow down significantly when there are irregular memory accesses, this must be dealt with the reproduce the object efficiently. To handle this, the second solution the paper proposes is a unified thread mapping algorithm to optimize memory collision and non-coalesced memory problems, which is a graph colouring algorithm that divides X-rays into different groups so within each group there are no collisions. Finally, the third part of the papers solution involves exploring architecture level optimizations to "further improve performance including mixed-precision computing and on-chip memory optimization". 
+
+In this project I will first attempt to recreate the results of the paper (but likely will have to change the 3rd component in the case that the architectures do not match, they use [NVIDIA Volta 100 GPU, resulting in a 1.48X speedup]), and then try to further explore the first point related to parallism granularities and setting different hyperparameters for ICD and SGD. Finally, if time permits I would like to use their method on some slightly different datasets just to test if it works in practise outside of the ones proposed in the paper. 
+
+
 <p><b><font color="#005128">Startup Paper(s):</font></b> <a href=".\XRAYReconstruction.pdf">XRAY Reconstruction on GPU Original Paper</a> </p>
 
 <p><b><font color="#005128">Deliverables:</font></b></p>
