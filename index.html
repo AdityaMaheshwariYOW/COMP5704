@@ -34,11 +34,10 @@
 <hr noshade="noshade">
 <b><font color="#005128">Project Outline:</font></b> 
 
-This project focuses on model based iterative methods for XCT image reconstruction on GPUs. The startup paper (cuMBIR) provides a solution that allows each thread in a GPU to handle the reconstruction of one X-ray (slice) of the 3D object. Because slices have an irregular geometric relationship, and GPUs slow down significantly with irregular patterns of memory access, the paper suggests using a graph colouring algorithm to separate X-rays that have a higher degree of collisions (i.e minimize the number of overlaps on the voxels - 3D pixels - of the image that they are recreating). After these collisions are minimized, the paper suggests another graph partitioning algorithm so that X-rays (threads) that access similar (but not the same) parts of the image are placed into the same warp to minimize non-coalesced memory accesses. Using this mapping, the GPU is then used to iteratively update the image by using either iterative coordinate descent or stochastic gradient descent to minimize an objective function which when minimized produces a high quality and smooth image. 
+X-ray Computed Tomography is a leading method for visualizing the inside of an object non-destructively. Iterative Reconstruction methods are continuing to grow in popularity because they are able to produce sufficiently high quality reconstructions with less data and therefore can reduce the radiation exposure of the object being reconstructed. However, these methods are very computationally intensive, making them hard to use in practise settings simply because reconstruction times are extremely high. Graphics Processing Units (GPUs) are extremely efficient at computationally intensive problems, and they can also work well at speeding up iterative methods for XCT reconstruction!
+In this paper I implemented a stochastic gradient descent (SGD) based solution for XCT reconstruction and parallelize it using a GPU. These results are compared in terms of reconstruction speed to a stochastic gradient descent based solution on CPUs. The results from SGD are also are compared to a CPU based iterative coordinate descent (ICD) implementation both visually and in terms of L1 error. The conclusions show that SGD is able to reach a lower L1 error and produces different results than ICD visually. Furthermore, the parallelized SGD (on a GPU) is much faster (gives a 4X speedup on smaller 82*82 pixel reconstructions with under 10,000 X-rays and over a 30X speedup on the largest 256*256 pixel reconstructions with over 50,000 X-rays) compared to sequential SGD (on a CPU). This speedup factor continues to increase as the reconstruction sizes and numbers of X-rays get bigger.
 
-In this project I will first attempt to recreate the results of the paper (but on different GPU architectures; they use [NVIDIA Volta 100 GPU, resulting in a 1.48X speedup]), and then further explore the first two ideas by testing different parallelism granularities and setting different hyper-parameters for ICD and SGD. I will also test a new version of ICD for this problem because I think it can be further parallelized, specifically because of the sparse structure of XCT data. After that, if time permits I will explore to see if there is a way to parallelize this (or another) graph colouring/partitioning step potentially so that we can try running this problem in batches. Finally, (again if time permits) I would like to use the new method on some slightly different datasets just to see if they can actually generalize.
-
-<p><b><font color="#005128">Startup Paper(s):</font></b> <a href=".\References\33XRAYcuMBIR.pdf">XRAY Reconstruction on GPU Original Paper</a> </p>
+<p><b><font color="#005128">Startup Paper(s):</font></b> <a href=".\References\3XRAYcuMBIR.pdf">XRAY Reconstruction on GPU Original Paper</a> </p>
 
 <p><b><font color="#005128">Deliverables:</font></b></p>
 
@@ -55,10 +54,10 @@ LATEX template)</div>
     <div align="left"> <a href=".\PresentationCOMP5704.pdf"><font color="#000000">Slide Presentation</font></a> (PDF File) incl. Questions on Slide 22</div>
   </li>
   <li>
-    <div align="left"><a href="Final_Paper.pdf"><font color="#000000">Final
-Paper</font></a> (PDF file created from LATEX template)</div>
+    <div align="left"><a href="FinalPaper.pdf"><font color="#000000">Final
+Paper</font></a></div>
   </li>
-  <li><a href="Code_and_Data"><font color="#000000">Code and Data</font></a>
+  <li><a href="codeAndReconstructions.zip"><font color="#000000">Code and Data</font></a>
 (put all code, data, etc. into this directory)</li>
 </ul>
 
@@ -84,28 +83,16 @@ Paper</font></a> (PDF file created from LATEX template)</div>
   
   <li><div align="left"><a href=".\References\10FastMBXRAYICD.pdf"><font color="#000000">Fast Model-Based X-Ray CT Reconstruction Using Spatially Nonhomogeneous ICD Optimization</font></a></div></li>
 
-  <li><div align="left"><a href=".\References\11MRIGPU.pdf"><font color="#000000">Accelerating advanced MRI reconstructions on GPUs</font></a></div></li>
-  
-  <li><div align="left"><a href=".\References\13CTDimMetrology.pdf"><font color="#000000">Computed tomography for dimensional metrology</font></a></div></li>
-  
-  <li><div align="left"><a href=".\References\14CTCUDA.pdf"><font color="#000000">Scalable and Modular Online Data Processing for Ultrafast Computed Tomography Using CUDA Pipelines</font></a></div></li>
+  <li><div align="left"><a href=".\References\11KalendarXCT.pdf"><font color="#000000">Iterative reconstruction methods in X-ray CT</font></a></div></li>
+ 
+  <li><div align="left"><a href=".\References\12HelicalCT.pdf"><font color="#000000">Three-dimensional Statistical Modeling for Image Quality Improvements in Multi-Slice Helical CT</font></a></div></li>
 
-  <li><div align="left"><a href=".\References\15TomographicIRGradient.pdf"><font color="#000000">Tomographic image reconstruction via estimation of sparse unidirectional gradients</font></a></div></li>
-  
-  <li><div align="left"><a href=".\References\17GPUBranchlessDistanceProjection.pdf"><font color="#000000">GPU-Based Branchless Distance-Driven Projection and Backprojection</font></a></div></li>
-  
-  <li><div align="left"><a href=".\References\18CUDAGrid.pdf"><font color="#000000">A review of CUDA optimization techniques and tools for structured grid computing</font></a></div></li>
+  <li><div align="left"><a href=".\References\14LotusXRAY.pdf"><font color="#000000">Tomographic X-ray data of a lotus root filled with attenuating objects</font></a></div></li>
 
-  <li><div align="left"><a href=".\References\19HelicalCT.pdf"><font color="#000000">Three-dimensional Statistical Modeling for Image Quality Improvements in Multi-Slice Helical CT</font></a></div></li>
-  
-  <li><div align="left"><a href=".\References\20GPUConeBased3D.pdf"><font color="#000000">GPU-Based 3D Cone-Beam CT Image Reconstruction for Large Data Volume</font></a></div></li>
-  
-  <li><div align="left"><a href=".\References\21DistanceDrivenTomography.pdf"><font color="#000000">A GPU Implementation of Distance-Driven Computed Tomography</font></a></div></li>
+  <li><div align="left"><a href=".\References\15WalnutXRAY.pdf"><font color="#000000">Tomographic X-ray data of a walnut</font></a></div></li>
 
-  <li><div align="left"><a href=".\References\22KalendarXCT.pdf"><font color="#000000">Iterative reconstruction methods in X-ray CT</font></a></div></li>
-  
-  <li><div align="left"><a href=".\References\23GPUSparse.pdf"><font color="#000000">Using GPUs to speedup sparse coding algorithms applied to self-taught learning problems</font></a></div></li>
-  
+   
+   
 
 
 </ul>
